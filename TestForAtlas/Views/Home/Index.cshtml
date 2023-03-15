@@ -1,0 +1,47 @@
+﻿@model TestForAtlas.Models.InputDataViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .сalculation-сard{
+        margin: 0 auto;
+        width: 100%;
+        max-width:380px;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4 text-uppercase m-4">рассчитать аннуитетный займ - <a class="" asp-area="" asp-controller="Home" asp-action="Dop">Дополнительное задание</a></h1>
+    <div class="card сalculation-сard px-4 py-2">
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.ValidationSummary(true)
+            <fieldset>
+                <legend class="text-uppercase">рассчитать</legend>
+ 
+                <div class="editor-label">Сумма займа</div>
+                <div class="editor-field mb-3">
+                    @Html.EditorFor(model => model.LoanAmount)
+                    @Html.ValidationMessageFor(model => model.LoanAmount)
+                </div>
+
+                <div class="editor-label">Срок займа (в месяцах)</div>
+                <div class="editor-field mb-3">
+                    @Html.EditorFor(model => model.LoanTerm)
+                    @Html.ValidationMessageFor(model => model.LoanTerm)
+                </div>
+
+                <div class="editor-label">Ставка (в год)</div>
+                <div class="editor-field">
+                    @Html.EditorFor(model => model.RateInYear)
+                    @Html.ValidationMessageFor(model => model.RateInYear)
+                </div>
+ 
+                <p class="pt-4">
+                    <input type="submit" value="Рассчитать"  class="btn btn-primary"/>
+                </p>
+            </fieldset>
+        }
+    </div>
+</div>

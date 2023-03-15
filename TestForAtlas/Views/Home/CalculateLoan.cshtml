@@ -1,0 +1,44 @@
+﻿@{
+    var ListLoan = ViewBag.ListLoan;
+    var SumPerc = ViewBag.Sumperc;
+    ViewData["Title"] = "Calculate";
+}
+<div class="text-center">
+    <h1 class="display-4 text-uppercase m-4">аннуитетный займ рассчитан</h1>
+
+    <div class="card mb-4 p-2">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Дата платежа</th>
+                    <th scope="col">Сумма платежа</th>
+                    <th scope="col">Основной долг</th>
+                    <th scope="col">Проценты</th>
+                    <th scope="col">Остаток долга</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ListLoan != null)
+                {
+                    @foreach (var loan in ListLoan)
+                    {
+                        <tr>
+                            <th scope="row">@loan.PaymentNumber</th>
+                            <td>@loan.PaymentDate</td>
+                            <td>@loan.BodyPaymentAmount</td>
+                            <td>@loan.MainDebt</td>
+                            <td>@loan.PaymentAmountForPercent</td>
+                            <td>@loan.RemainingPrincipal</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        Итого переплат - @SumPerc
+    </div>
+
+    <div>
+        @Html.ActionLink("Назад", "Index", "Home", null)
+    </div>
+</div>
