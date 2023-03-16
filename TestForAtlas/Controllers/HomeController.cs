@@ -22,9 +22,15 @@ namespace TestForAtlas.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (InputData.LoanTerm <= 0)
+                if (InputData.LoanTerm <= 0 || InputData.LoanTerm > 999)
                 {
                     ModelState.AddModelError("LoanTerm", "Неверный срок займа");
+                    return View(InputData);
+                }
+
+                if (InputData.RateInYear <= 0)
+                {
+                    ModelState.AddModelError("RateInYear", "Неверная ставка займа");
                     return View(InputData);
                 }
 
@@ -41,17 +47,69 @@ namespace TestForAtlas.Controllers
 
         public IActionResult CalculateLoan(InputDataViewModel inputData)
         {
-            var ListLoan = _calculateService.GetListPayment(inputData);
-            ViewBag.SumPerc = Math.Round(ListLoan.Sum(x => x.PaymentAmountForPercent), 2);
-            ViewBag.ListLoan = ListLoan;
+            try
+            {
+                var ListPayments = _calculateService.GetListPayments(inputData);
+                ViewBag.SumPercent = Math.Round(ListPayments.Sum(x => x.PaymentAmountForPercent), 2);
+                ViewBag.ListPayments = ListPayments;
+            }
+            catch
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Dop(FormLoanPerDayViewModel LoanPerDay)
+        { 
+            if (ModelState.IsValid)
+            {
+                if (LoanPerDay.LoanTerm <= 0 || LoanPerDay.LoanTerm > 999)
+                {
+                    ModelState.AddModelError("LoanTerm", "Неверный срок займа");
+                    return View(LoanPerDay);
+                }
+
+                if (LoanPerDay.RateInDay <= 0)
+                {
+                    ModelState.AddModelError("RateInDay", "Неверная ставка займа");
+                    return View(LoanPerDay);
+                }
+
+                if (LoanPerDay.StepPayment <= 0 || LoanPerDay.StepPayment > LoanPerDay.LoanTerm)
+                {
+                    ModelState.AddModelError("StepPayment", "Неверный шаг займа");
+                    return View(LoanPerDay);
+                }
+
+                return RedirectToAction("CalculateLoanPerDay", "Home", new { LoanPerDay.LoanAmount, LoanPerDay.LoanTerm, LoanPerDay.RateInDay, LoanPerDay.StepPayment });
+            }
+
+            return View(LoanPerDay);
         }
 
         public IActionResult Dop()
         {
             return View();
         }
+
+        public IActionResult CalculateLoanPerDay(FormLoanPerDayViewModel LoanPerDay)
+        {
+            try 
+            { 
+                var ListPayments = _calculateService.GetListPaymentsPerDay(LoanPerDay);
+                ViewBag.SumPercent = Math.Round(ListPayments.Sum(x => x.PaymentAmountForPercent), 2);
+                ViewBag.ListPayments = ListPayments;
+            }
+            catch
+            {
+                return RedirectToAction("Dop", "Home");
+            }
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
